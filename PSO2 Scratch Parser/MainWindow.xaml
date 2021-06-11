@@ -17,7 +17,7 @@
         </Style>
     </Window.Resources>
     <DockPanel>
-        <Menu DockPanel.Dock="Top">
+        <!--Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Header="_Exit" Click="menu_Exit"/>
             </MenuItem>
@@ -25,7 +25,7 @@
                 <MenuItem x:Name="ExportJsonMenu" Header="_Export Json" Click="menu_ExportJson" IsEnabled="False"/>
 
             </MenuItem>
-        </Menu>
+        </-->
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
@@ -47,48 +47,53 @@
             <TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="PSO2NGS Scratch Parser" TextAlignment="Center" Foreground="White" FontSize="35"/>
             <Separator Grid.Row="1" Grid.ColumnSpan="4"/>
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Scratch Source:" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Button x:Name="sourceURLBtn"
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Scratch Data:" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            
+            <Button x:Name="scratchBtn"
                 Grid.Row="3" 
                 Grid.Column="1"  
-                Content="Website(URL)"
+                Content="URL"
                 Click="button_ParseURL"/>
-
-            <Button x:Name="sourceHTMLBtn"
-                Grid.Row="3" 
-                Grid.Column="2"  
-                Content="HTML File"
-                Click="button_ParseHTML"
-                IsEnabled="False"/>
-
-            <Button x:Name="saveBtn"
-                Grid.Row="4" 
-                Grid.Column="1"  
-                Content="Save"
-                IsEnabled="false"
-                Click="button_SaveScratchList"/>
-
+            
             <Button x:Name="clearBtn"
-                Grid.Row="4" 
+                Grid.Row="3" 
                 Grid.Column="2"  
                 Content="Clear"
                 IsEnabled="false"
                 Click="button_ClearScratchList"/>
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Download Images:" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Scratch List:" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <Button x:Name="sourceSaveItemListBtn"
+                Grid.Row="4" 
+                Grid.Column="1"  
+                Content="Item List"
+                IsEnabled="false"
+                Click="button_ParseURL"/>
+
+            <Button x:Name="sourceSaveBonusListBtn"
+                Grid.Row="4" 
+                Grid.Column="2"
+                Content="Bonus List"
+                IsEnabled="false"
+                Click="saveBonusList"/>
+
+            <!--TextBlock Grid.Row="5" Grid.Column="0" Text="Download Images:" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/-->
+            
             <Button x:Name="downloadOriginalImageBtn" 
                 Grid.Row="5" 
                 Grid.Column="1"  
-                Content="Original Names"
+                Grid.ColumnSpan="2"
+                Content="Download Images"
                 IsEnabled="false"
                 Click="button_DownloadImageOriginalName"/>
 
-            <Button x:Name="downloadJPImageBtn"
+            <!--Button x:Name="downloadJPImageBtn"
                 Grid.Row="5" 
                 Grid.Column="2"  
                 Content="JP Names"
                 IsEnabled="false"
-                Click="button_DownloadImageJPName"/>
+                Click="button_DownloadImageJPName"/-->
 
             <TextBox x:Name="TextBoxLog"
                  Grid.Row="6" 

@@ -5,49 +5,81 @@ using Newtonsoft.Json;
 
 namespace PSO2_Scratch_Parser
 {
-    public class PrizeBoxItem
-    {
-        [JsonProperty("name(jp)")]
-        public string Name_jp { get; set; }
-
-        [JsonProperty("name(en)")]
-        public string Name_en { get; set; }
-        
-        [JsonProperty("image_url")]
-        public string Image_url { get; set; }
-
-        [JsonProperty("genre(jp)")]
-        public string Genre_jp { get; set; }
-
-        [JsonProperty("genre(en)")]
-        public string Genre_en { get; set; }
-
-    }
-
     public class Prize
     {
-        [JsonProperty("name(jp)")]
-        public string Name_jp { get; set; }
+        public string number { get; set; }
 
-        [JsonProperty("name(en)")]
-        public string Name_en { get; set; }
+        [JsonProperty("new")]
+        public string new_status { get; set; }
 
-        [JsonProperty("concept_art")]
-        public string Concept_art { get; set; }
+        public string name { get; set; }
 
-        [JsonProperty("image_url")]
-        public string Image_url { get; set; }
+        public string type_name { get; set; }
 
-        [JsonProperty("genre(jp)")]
-        public string Genre_jp { get; set; }
+        public string percent { get; set; }
 
-        [JsonProperty("genre(en)")]
-        public string Genre_en { get; set; }
+        public string explanation { get; set; }
 
-        [JsonProperty("rate")]
-        public string Rate { get; set; }
+        public string other { get; set; }
 
-        [JsonProperty("contents")]
-        public List<PrizeBoxItem> Contents { get; set; }
+        public string supplement { get; set; }
+
+        public string voiceid { get; set; }
+
+        public string type { get; set; }
+
+        public string illust { get; set; }
+
+        public string style { get; set; }
+
+        public string copyright { get; set; }
+
+        public string pickup { get; set; }
+
+        public string ss { get; set; }
+
+        public string scratchname { get; set; }
+    }
+
+    public class BonusPrize
+    {
+        public string number { get; set; }
+
+        [JsonProperty("new")]
+        public string new_status { get; set; }
+
+        public string name { get; set; }
+
+        public string type_name { get; set; }
+
+        public string num02 { get; set; }
+
+        public string num03 { get; set; }
+
+        public string trade { get; set; }
+
+        public string explanation { get; set; }
+
+        public string other { get; set; }
+
+        public string supplement { get; set; }
+
+        public string voiceid { get; set; }
+
+        public string type { get; set; }
+
+        public string illust { get; set; }
+
+        public string style { get; set; }
+
+        public string copyright { get; set; }
+
+        public string pickup { get; set; }
+
+        public string ss { get; set; }
+
+        public string scratchname { get; set; }
+
+        public string cycle { get; set; }
     }
 }

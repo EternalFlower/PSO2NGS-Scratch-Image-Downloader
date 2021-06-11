@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
 
-        <Label Name="lblQuestion" Grid.Column="1" Foreground="White">Scratch URL</Label>
+        <Label Name="lblQuestion" Grid.Column="1" Foreground="White">Scratch Json URL</Label>
         <TextBox Name="txtURL" Grid.Column="1" Grid.Row="1" MinWidth="250"/>
 
         <WrapPanel Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,15,0,0">

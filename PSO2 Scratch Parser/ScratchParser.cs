@@ -1,5 +1,4 @@
 ﻿using System;
-using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.IO;
@@ -20,145 +19,80 @@ namespace PSO2_Scratch_Parser
 
     public class ScratchParser
     {
-        private readonly List<Prize> m_prizeList;
+        private readonly List<Prize> m_ItemList;
+        private readonly List<BonusPrize> m_BonusList;
         private string Prize_Url = "";
+        private const string itemlistJson_relURL = "js/itemlist.json";
+        private const string bonuslistJson_relURL = "js/bonuslist.json";
+        private bool m_hasData = false;
 
         public ScratchParser()
         {
-            m_prizeList = new List<Prize>();
+            m_ItemList = new List<Prize>();
+            m_BonusList = new List<BonusPrize>();
         }
 
-        public void parseFromWebsiteURL(string url)
+        public void ParseScratch(string url)
         {
             Clear();
-
             Prize_Url = url;
-            HtmlWeb web = new HtmlWeb() { OverrideEncoding = Encoding.UTF8 };
-            var htmlDoc = web.Load(url);
-
-            Trace.WriteLine($"Parsing data from {url}.");
-
-            parseHTMLDoc(htmlDoc);
+            parseFromItemlistJSON();
+            parseFromBonuslistJSON();
+            m_hasData = true;
         }
 
-        public void parseFromHTMLFile(string filename)
+        public void parseFromItemlistJSON()
         {
-            Clear();
-
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.Load(filename);
-
-            Trace.WriteLine($"Parsing data from {filename}.");
-
-            parseHTMLDoc(htmlDoc);
+            using (WebClient wc = new WebClient())
+            {
+                var json = wc.DownloadString(MergeURI(Prize_Url, itemlistJson_relURL));
+                m_ItemList.AddRange(JsonConvert.DeserializeObject<List<Prize>>(json));
+            }
         }
 
-        public int Count
+        public void parseFromBonuslistJSON()
+        {
+            using (WebClient wc = new WebClient())
+            {
+                var json = wc.DownloadString(MergeURI(Prize_Url, bonuslistJson_relURL));
+                m_BonusList.AddRange(JsonConvert.DeserializeObject<List<BonusPrize>>(json));
+            }
+        }
+
+        public bool HasData
         {
             get
             {
-                return m_prizeList.Count;
+                return m_hasData;
             }
         }
 
-        private string GetImageUrl(string rel_url)
+        private string MergeURI(string base_url, string rel_url)
         {
-            if (String.IsNullOrEmpty(rel_url))
-            {
-                return "";
-            }
-            else if (String.IsNullOrEmpty(Prize_Url))
-            {
-                return rel_url;
-            }
-
-            var uri = new Uri(Prize_Url);
+            var uri = new Uri(base_url);
             uri = new Uri(uri, rel_url);
             return uri.AbsoluteUri;
         }
 
-        private void parseHTMLDoc(HtmlDocument htmlDoc)
-        {
-            var prizes = htmlDoc.DocumentNode.SelectNodes("//dl[@class='item-list-l']");
-
-            foreach (var prize in prizes)
-            {
-                var prize_name = prize.SelectSingleNode("dt").InnerText;
-                var concept_url = prize.SelectSingleNode(".//a[@title='設定画']")?.GetAttributeValue("href", "");
-                concept_url = GetImageUrl(concept_url);
-
-                var prize_details = prize.SelectNodes(".//td");
-
-                if (prize_details.Count < 2)
-                    continue;
-
-                var prize_list = prize.SelectSingleNode(".//ul[@class='image']");
-
-                if (prize_list != null)
-                {
-                    var parse_list = new List<PrizeBoxItem>();
-                    var prize_contents = prize_list.SelectNodes(".//li");
-
-                    foreach (var item in prize_contents)
-                    {
-                        Match name_match = Regex.Match(item.InnerText, "「(.*?)」");
-                        var item_name = name_match.Success ? name_match.Groups?[1].Value : "";
-
-                        Match genre_match = Regex.Match(item.InnerText, "（(.*?)）");
-                        var item_genre = genre_match.Success ? genre_match.Groups?[1].Value : "";
-
-                        var item_image = GetImageUrl(prize.SelectSingleNode($".//a[@title='{item_name}']")?.GetAttributeValue("href", ""));
-
-
-                        parse_list.Add(new PrizeBoxItem
-                        {
-                            Name_jp = item_name,
-                            Name_en = "",
-                            Image_url = item_image,
-                            Genre_jp = item_genre,
-                            Genre_en = ""
-                        });
-                    }
-
-                    m_prizeList.Add(new Prize
-                    {
-                        Name_jp = prize_name,
-                        Name_en = "",
-                        Concept_art = concept_url,
-                        Genre_jp = prize_details[0]?.InnerText,
-                        Genre_en = "",
-                        Rate = prize_details[1]?.InnerText,
-                        Contents = parse_list
-                    });
-                }
-                else
-                {
-                    var item_image = GetImageUrl(prize.SelectSingleNode($".//a[@title='{prize_name}']")?.GetAttributeValue("href", ""));
-
-                    m_prizeList.Add(new Prize
-                    {
-                        Name_jp = prize_name,
-                        Name_en = "",
-                        Concept_art = concept_url,
-                        Image_url = item_image,
-                        Genre_jp = prize_details[0]?.InnerText,
-                        Genre_en = "",
-                        Rate = prize_details[1]?.InnerText
-                    });
-                }
-            }
-
-            Trace.WriteLine("Finish parsing.");
-        }
-
-        public void Write(string fileName)
+        public void WriteItemList(string fileName)
         {
             var settings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 Formatting = Formatting.Indented
             };
-            var jsonString = JsonConvert.SerializeObject(m_prizeList, settings);
+            var jsonString = JsonConvert.SerializeObject(m_ItemList, settings);
+            File.WriteAllText(fileName, jsonString);
+        }
+
+        public void WriteBonusList(string fileName)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented
+            };
+            var jsonString = JsonConvert.SerializeObject(m_BonusList, settings);
             File.WriteAllText(fileName, jsonString);
         }
 
@@ -179,9 +113,12 @@ namespace PSO2_Scratch_Parser
                 {
                     await client.DownloadFileTaskAsync(url, filename);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Exception inner = e.InnerException;
+                    
                     Trace.WriteLine($"Failed to download File: {filename} from: {url.AbsoluteUri}");
+                    Trace.WriteLine($"Exception {inner.Message}.");
                 }
 
             }
@@ -191,31 +128,76 @@ namespace PSO2_Scratch_Parser
         {
             Dictionary<string, string> files = new Dictionary<string, string>();
             var downloadTasks = new List<Task>();
+            Regex illus_regex = new Regex("il");
+            Regex icon_regex = new Regex("icon");
 
-            foreach (var prize in m_prizeList)
+            foreach (var prize in m_ItemList)
             {
-                if (!String.IsNullOrEmpty(prize.Concept_art))
-                {
-                    string imageName = option == ImageNameOption.Original ? prize.Concept_art.Substring(prize.Concept_art.LastIndexOf("/") + 1) : $"{MakeValidFileName(prize.Name_jp)}_concept.jpg";
-                    files.TryAdd(prize.Concept_art, Path.Combine(directory, imageName));
-                }
+                var illusList = prize.illust.Split(',');
 
-                if (!String.IsNullOrEmpty(prize.Image_url))
+                if (prize.ss.Length > 1)
                 {
-                    string imageName = option == ImageNameOption.Original ? prize.Image_url.Substring(prize.Image_url.LastIndexOf("/") + 1) : $"{MakeValidFileName(prize.Name_jp)}.jpg";
-                    files.TryAdd(prize.Image_url, Path.Combine(directory, imageName));
-                }
-
-                if (prize.Contents != null)
-                {
-                    foreach (var item in prize.Contents)
+                    var pngList = prize.ss.Split(',');
+                    for (var i = 0; i < pngList.Length; i++)
                     {
-                        if (!String.IsNullOrEmpty(item.Image_url))
+                        files.TryAdd(MergeURI(Prize_Url, "../../img/item/ss/" + pngList[i] + ".jpg"), Path.Combine(directory, pngList[i] + ".jpg"));
+                    }
+                } 
+                else if (illusList.Length > 1)
+                {
+                    for (var i = 0; i < illusList.Length; i++)
+                    {
+                        
+                        if (illus_regex.IsMatch(illusList[i]))
                         {
-                            string imageName = option == ImageNameOption.Original ? item.Image_url.Substring(item.Image_url.LastIndexOf("/") + 1) : $"{MakeValidFileName(item.Name_jp)}.jpg";
-                            files.TryAdd(item.Image_url, Path.Combine(directory, imageName));
+                            files.TryAdd(MergeURI(Prize_Url, "../../img/item/illust/" + illusList[i].Replace("il","") + ".png"), Path.Combine(directory, illusList[i].Replace("il", "") + ".png"));
+                        }
+                        else
+                        {
+                            files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[i] + ".png"), Path.Combine(directory, illusList[i] + ".png"));
                         }
                     }
+                }
+                else
+                {
+                    files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[0] + ".png"), Path.Combine(directory, illusList[0] + ".png"));
+                }
+            }
+
+            foreach (var prize in m_BonusList)
+            {
+                var illusList = prize.illust.Split(',');
+
+                if (prize.ss.Length > 1)
+                {
+                    var pngList = prize.ss.Split(',');
+                    for (var i = 0; i < pngList.Length; i++)
+                    {
+                        files.TryAdd(MergeURI(Prize_Url, "../../img/item/ss/" + pngList[i] + ".jpg"), Path.Combine(directory, pngList[i] + ".jpg"));
+                    }
+                }
+                else if (illusList.Length > 1)
+                {
+                    for (var i = 0; i < illusList.Length; i++)
+                    {
+
+                        if (illus_regex.IsMatch(illusList[i]))
+                        {
+                            files.TryAdd(MergeURI(Prize_Url, "../../img/item/illust/" + illusList[i].Replace("il", "") + ".png"), Path.Combine(directory, illusList[i].Replace("il", "") + ".png"));
+                        }
+                        else
+                        {
+                            files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[i] + ".png"), Path.Combine(directory, illusList[i] + ".png"));
+                        }
+                    }
+                }
+                else if (icon_regex.IsMatch(illusList[0]))
+                {
+                    files.TryAdd(MergeURI(Prize_Url, "../../img/item/icon/" + illusList[0] + ".png"), Path.Combine(directory, illusList[0] + ".png"));
+                }
+                else
+                {
+                    files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[0] + ".png"), Path.Combine(directory, illusList[0] + ".png"));
                 }
             }
 
@@ -232,7 +214,9 @@ namespace PSO2_Scratch_Parser
         public void Clear()
         {
             Prize_Url = "";
-            m_prizeList.Clear();
+            m_ItemList.Clear();
+            m_BonusList.Clear();
+            m_hasData = false;
         }
 
         private static string MakeValidFileName(string name)
