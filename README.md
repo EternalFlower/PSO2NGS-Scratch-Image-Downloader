@@ -2,6 +2,6 @@
 
 C# Version of Scratch Parser
 
-Fetch the data from URL or HTML file and parse to create a json file containing all of the items in the list and the image url.
+Fetch JSON item list and bonus list from website and download the images.
 
 Also can download the images.
