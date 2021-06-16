@@ -35,9 +35,24 @@ namespace PSO2_Scratch_Parser
         public void ParseScratch(string url)
         {
             Clear();
-            Prize_Url = url;
-            parseFromItemlistJSON();
-            parseFromBonuslistJSON();
+            Prize_Url = CleanScratchURL(url);
+            try
+            {
+                parseFromItemlistJSON();
+                parseFromBonuslistJSON();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e.Message);
+
+                var innerException = e.InnerException;
+                while (innerException != null)
+                {
+                    Trace.WriteLine(innerException.Message);
+                    innerException = innerException.InnerException;
+                }
+            }
+            
             m_hasData = true;
         }
 
@@ -48,6 +63,7 @@ namespace PSO2_Scratch_Parser
                 var json = wc.DownloadString(MergeURI(Prize_Url, itemlistJson_relURL));
                 m_ItemList.AddRange(JsonConvert.DeserializeObject<List<Prize>>(json));
             }
+
         }
 
         public void parseFromBonuslistJSON()
@@ -72,6 +88,21 @@ namespace PSO2_Scratch_Parser
             var uri = new Uri(base_url);
             uri = new Uri(uri, rel_url);
             return uri.AbsoluteUri;
+        }
+
+        private string CleanScratchURL(string url)
+        {
+            if (url.EndsWith(".html"))
+            {
+                var i = url.LastIndexOf('/');
+                return url.Substring(0, i + 1);
+            } 
+            else if (url.EndsWith("/"))
+            {
+                return url;
+            }
+
+            return url + '/';
         }
 
         public void WriteItemList(string fileName)
@@ -135,7 +166,11 @@ namespace PSO2_Scratch_Parser
             {
                 var illusList = prize.illust.Split(',');
 
-                if (prize.ss.Length > 1)
+                if (prize.voiceid.Length > 1)
+                {
+                    continue;
+                } 
+                else if (prize.ss.Length > 1)
                 {
                     var pngList = prize.ss.Split(',');
                     for (var i = 0; i < pngList.Length; i++)
@@ -168,7 +203,11 @@ namespace PSO2_Scratch_Parser
             {
                 var illusList = prize.illust.Split(',');
 
-                if (prize.ss.Length > 1)
+                if (prize.voiceid.Length > 1)
+                {
+                    continue;
+                }
+                else if (prize.ss.Length > 1)
                 {
                     var pngList = prize.ss.Split(',');
                     for (var i = 0; i < pngList.Length; i++)
