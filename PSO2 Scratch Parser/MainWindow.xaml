@@ -78,22 +78,13 @@
                 IsEnabled="false"
                 Click="saveBonusList"/>
 
-            <!--TextBlock Grid.Row="5" Grid.Column="0" Text="Download Images:" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/-->
-            
-            <Button x:Name="downloadOriginalImageBtn" 
+            <Button x:Name="downloadImageBtn" 
                 Grid.Row="5" 
                 Grid.Column="1"  
                 Grid.ColumnSpan="2"
                 Content="Download Images"
                 IsEnabled="false"
-                Click="button_DownloadImageOriginalName"/>
-
-            <!--Button x:Name="downloadJPImageBtn"
-                Grid.Row="5" 
-                Grid.Column="2"  
-                Content="JP Names"
-                IsEnabled="false"
-                Click="button_DownloadImageJPName"/-->
+                Click="button_DownloadImage"/>
 
             <TextBox x:Name="TextBoxLog"
                  Grid.Row="6" 
@@ -112,5 +103,4 @@
         </Grid>
     </DockPanel>
     
-
 </Window>

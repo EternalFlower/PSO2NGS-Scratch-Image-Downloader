@@ -10,13 +10,6 @@ using System.Diagnostics;
 
 namespace PSO2_Scratch_Parser
 {
-    public enum ImageNameOption
-    {
-        Original,
-        Japanese,
-        English
-    }
-
     public class ScratchParser
     {
         private readonly List<Prize> m_ItemList;
@@ -25,11 +18,13 @@ namespace PSO2_Scratch_Parser
         private const string itemlistJson_relURL = "js/itemlist.json";
         private const string bonuslistJson_relURL = "js/bonuslist.json";
         private bool m_hasData = false;
+        private Dictionary<string, bool> m_Options;
 
         public ScratchParser()
         {
             m_ItemList = new List<Prize>();
             m_BonusList = new List<BonusPrize>();
+            m_Options = new Dictionary<string, bool>();
         }
 
         public void ParseScratch(string url)
@@ -155,7 +150,7 @@ namespace PSO2_Scratch_Parser
             }
         }
 
-        public async void SaveImages(string directory, ImageNameOption option)
+        public async void SaveImages(string directory)
         {
             Dictionary<string, string> files = new Dictionary<string, string>();
             var downloadTasks = new List<Task>();
@@ -232,6 +227,9 @@ namespace PSO2_Scratch_Parser
                 }
                 else if (icon_regex.IsMatch(illusList[0]))
                 {
+                    if (!m_Options.GetValueOrDefault("icon", false))
+                        continue;
+
                     files.TryAdd(MergeURI(Prize_Url, "../../img/item/icon/" + illusList[0] + ".png"), Path.Combine(directory, illusList[0] + ".png"));
                 }
                 else

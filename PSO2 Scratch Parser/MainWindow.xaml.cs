@@ -102,12 +102,7 @@ namespace PSO2_Scratch_Parser
             }
         }
 
-        //public void button_SaveScratchList(Object sender, EventArgs e)
-        //{
-        //    saveItemList();
-        //}
-
-        public void button_DownloadImageOriginalName(Object sender, EventArgs e)
+        public void button_DownloadImage(Object sender, EventArgs e)
         {
             using (var dialog = new FolderBrowserDialog())
             {
@@ -117,24 +112,7 @@ namespace PSO2_Scratch_Parser
                 if (result == System.Windows.Forms.DialogResult.OK)
                 {
                     var downloadDirectory = dialog.SelectedPath;
-                    ScratchParser.SaveImages(downloadDirectory, ImageNameOption.Original);
-
-                    Properties.Settings.Default.SelectSaveImageDirectory = dialog.SelectedPath;
-                }
-            }
-        }
-
-        public void button_DownloadImageJPName(Object sender, EventArgs e)
-        {
-            using (var dialog = new FolderBrowserDialog())
-            {
-                dialog.SelectedPath = Properties.Settings.Default.SelectSaveImageDirectory;
-
-                DialogResult result = dialog.ShowDialog();
-                if (result == System.Windows.Forms.DialogResult.OK)
-                {
-                    var downloadDirectory = dialog.SelectedPath;
-                    ScratchParser.SaveImages(downloadDirectory, ImageNameOption.Japanese);
+                    ScratchParser.SaveImages(downloadDirectory);
 
                     Properties.Settings.Default.SelectSaveImageDirectory = dialog.SelectedPath;
                 }
@@ -145,7 +123,7 @@ namespace PSO2_Scratch_Parser
         {
             ScratchParser.Clear();
             UpdateParseControls();
-            Trace.WriteLine("Clear parsed data.");
+            Trace.WriteLine("Clear fetched data.");
         }
 
         public void UpdateParseControls()
@@ -153,11 +131,8 @@ namespace PSO2_Scratch_Parser
             var isEnabled = ScratchParser != null && ScratchParser.HasData;
             sourceSaveItemListBtn.IsEnabled = isEnabled;
             sourceSaveBonusListBtn.IsEnabled = isEnabled;
-            //downloadJPImageBtn.IsEnabled = isEnabled;
-            downloadOriginalImageBtn.IsEnabled = isEnabled;
-            //saveBtn.IsEnabled = isEnabled;
+            downloadImageBtn.IsEnabled = isEnabled;
             clearBtn.IsEnabled = isEnabled;
-            //ExportJsonMenu.IsEnabled = isEnabled;
         }
 
         private void TextBoxLog_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -175,10 +150,5 @@ namespace PSO2_Scratch_Parser
         {
             System.Windows.Application.Current.Shutdown();
         }
-
-        //public void menu_ExportJson(object sender, RoutedEventArgs e)
-        //{
-        //    saveItemList();
-        //}
     }
 }
