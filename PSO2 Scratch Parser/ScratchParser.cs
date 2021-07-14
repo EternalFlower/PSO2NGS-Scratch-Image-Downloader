@@ -100,7 +100,7 @@ namespace PSO2_Scratch_Parser
             return url + '/';
         }
 
-        public void WriteItemList(string fileName)
+        public void WriteItemListJSON(string fileName)
         {
             var settings = new JsonSerializerSettings
             {
@@ -111,7 +111,7 @@ namespace PSO2_Scratch_Parser
             File.WriteAllText(fileName, jsonString);
         }
 
-        public void WriteBonusList(string fileName)
+        public void WriteBonusListJSON(string fileName)
         {
             var settings = new JsonSerializerSettings
             {
@@ -120,6 +120,28 @@ namespace PSO2_Scratch_Parser
             };
             var jsonString = JsonConvert.SerializeObject(m_BonusList, settings);
             File.WriteAllText(fileName, jsonString);
+        }
+
+        public async void WriteItemName(string fileName)
+        {
+            using (StreamWriter file = new StreamWriter(fileName))
+            {
+                foreach (var item in m_ItemList)
+                {
+                    await file.WriteLineAsync(item.name);
+                }
+            }
+        }
+
+        public async void WriteBonusName(string fileName)
+        {
+            using (StreamWriter file = new StreamWriter(fileName))
+            {
+                foreach (var item in m_BonusList)
+                {
+                    await file.WriteLineAsync(item.name);
+                }
+            }
         }
 
         private async Task DownloadImage(Uri url, string filename)
@@ -150,91 +172,97 @@ namespace PSO2_Scratch_Parser
             }
         }
 
-        public async void SaveImages(string directory)
+        public async void SaveImages(string directory, bool saveItemList = true, bool saveBonusList = true)
         {
             Dictionary<string, string> files = new Dictionary<string, string>();
             var downloadTasks = new List<Task>();
             Regex illus_regex = new Regex("il");
             Regex icon_regex = new Regex("icon");
 
-            foreach (var prize in m_ItemList)
+            if (saveItemList)
             {
-                var illusList = prize.illust.Split(',');
+                foreach (var prize in m_ItemList)
+                {
+                    var illusList = prize.illust.Split(',');
 
-                if (prize.voiceid.Length > 1)
-                {
-                    continue;
-                } 
-                else if (prize.ss.Length > 1)
-                {
-                    var pngList = prize.ss.Split(',');
-                    for (var i = 0; i < pngList.Length; i++)
+                    if (prize.voiceid.Length > 1)
                     {
-                        files.TryAdd(MergeURI(Prize_Url, "../../img/item/ss/" + pngList[i] + ".jpg"), Path.Combine(directory, pngList[i] + ".jpg"));
+                        continue;
                     }
-                } 
-                else if (illusList.Length > 1)
-                {
-                    for (var i = 0; i < illusList.Length; i++)
+                    else if (prize.ss.Length > 1)
                     {
-                        
-                        if (illus_regex.IsMatch(illusList[i]))
+                        var pngList = prize.ss.Split(',');
+                        for (var i = 0; i < pngList.Length; i++)
                         {
-                            files.TryAdd(MergeURI(Prize_Url, "../../img/item/illust/" + illusList[i].Replace("il","") + ".png"), Path.Combine(directory, illusList[i].Replace("il", "") + ".png"));
-                        }
-                        else
-                        {
-                            files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[i] + ".png"), Path.Combine(directory, illusList[i] + ".png"));
+                            files.TryAdd(MergeURI(Prize_Url, "../../img/item/ss/" + pngList[i] + ".jpg"), Path.Combine(directory, pngList[i] + ".jpg"));
                         }
                     }
-                }
-                else
-                {
-                    files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[0] + ".png"), Path.Combine(directory, illusList[0] + ".png"));
+                    else if (illusList.Length > 1)
+                    {
+                        for (var i = 0; i < illusList.Length; i++)
+                        {
+
+                            if (illus_regex.IsMatch(illusList[i]))
+                            {
+                                files.TryAdd(MergeURI(Prize_Url, "../../img/item/illust/" + illusList[i].Replace("il", "") + ".png"), Path.Combine(directory, illusList[i].Replace("il", "") + ".png"));
+                            }
+                            else
+                            {
+                                files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[i] + ".png"), Path.Combine(directory, illusList[i] + ".png"));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[0] + ".png"), Path.Combine(directory, illusList[0] + ".png"));
+                    }
                 }
             }
 
-            foreach (var prize in m_BonusList)
+            if (saveBonusList)
             {
-                var illusList = prize.illust.Split(',');
+                foreach (var prize in m_BonusList)
+                {
+                    var illusList = prize.illust.Split(',');
 
-                if (prize.voiceid.Length > 1)
-                {
-                    continue;
-                }
-                else if (prize.ss.Length > 1)
-                {
-                    var pngList = prize.ss.Split(',');
-                    for (var i = 0; i < pngList.Length; i++)
+                    if (prize.voiceid.Length > 1)
                     {
-                        files.TryAdd(MergeURI(Prize_Url, "../../img/item/ss/" + pngList[i] + ".jpg"), Path.Combine(directory, pngList[i] + ".jpg"));
-                    }
-                }
-                else if (illusList.Length > 1)
-                {
-                    for (var i = 0; i < illusList.Length; i++)
-                    {
-
-                        if (illus_regex.IsMatch(illusList[i]))
-                        {
-                            files.TryAdd(MergeURI(Prize_Url, "../../img/item/illust/" + illusList[i].Replace("il", "") + ".png"), Path.Combine(directory, illusList[i].Replace("il", "") + ".png"));
-                        }
-                        else
-                        {
-                            files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[i] + ".png"), Path.Combine(directory, illusList[i] + ".png"));
-                        }
-                    }
-                }
-                else if (icon_regex.IsMatch(illusList[0]))
-                {
-                    if (!m_Options.GetValueOrDefault("icon", false))
                         continue;
+                    }
+                    else if (prize.ss.Length > 1)
+                    {
+                        var pngList = prize.ss.Split(',');
+                        for (var i = 0; i < pngList.Length; i++)
+                        {
+                            files.TryAdd(MergeURI(Prize_Url, "../../img/item/ss/" + pngList[i] + ".jpg"), Path.Combine(directory, pngList[i] + ".jpg"));
+                        }
+                    }
+                    else if (illusList.Length > 1)
+                    {
+                        for (var i = 0; i < illusList.Length; i++)
+                        {
 
-                    files.TryAdd(MergeURI(Prize_Url, "../../img/item/icon/" + illusList[0] + ".png"), Path.Combine(directory, illusList[0] + ".png"));
-                }
-                else
-                {
-                    files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[0] + ".png"), Path.Combine(directory, illusList[0] + ".png"));
+                            if (illus_regex.IsMatch(illusList[i]))
+                            {
+                                files.TryAdd(MergeURI(Prize_Url, "../../img/item/illust/" + illusList[i].Replace("il", "") + ".png"), Path.Combine(directory, illusList[i].Replace("il", "") + ".png"));
+                            }
+                            else
+                            {
+                                files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[i] + ".png"), Path.Combine(directory, illusList[i] + ".png"));
+                            }
+                        }
+                    }
+                    else if (icon_regex.IsMatch(illusList[0]))
+                    {
+                        if (!m_Options.GetValueOrDefault("icon", false))
+                            continue;
+
+                        files.TryAdd(MergeURI(Prize_Url, "../../img/item/icon/" + illusList[0] + ".png"), Path.Combine(directory, illusList[0] + ".png"));
+                    }
+                    else
+                    {
+                        files.TryAdd(MergeURI(Prize_Url, "img/ss/" + illusList[0] + ".png"), Path.Combine(directory, illusList[0] + ".png"));
+                    }
                 }
             }
 

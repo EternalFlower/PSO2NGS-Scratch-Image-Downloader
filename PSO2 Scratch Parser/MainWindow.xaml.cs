@@ -47,7 +47,7 @@ namespace PSO2_Scratch_Parser
 
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                ScratchParser.WriteItemList(saveFileDialog.FileName);
+                ScratchParser.WriteItemListJSON(saveFileDialog.FileName);
                 Trace.WriteLine($"Saved parsed data to {saveFileDialog.FileName}.");
 
                 Properties.Settings.Default.SelectSaveJsonDirectory = System.IO.Path.GetDirectoryName(saveFileDialog.FileName);
@@ -62,7 +62,7 @@ namespace PSO2_Scratch_Parser
 
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                ScratchParser.WriteBonusList(saveFileDialog.FileName);
+                ScratchParser.WriteBonusListJSON(saveFileDialog.FileName);
                 Trace.WriteLine($"Saved parsed data to {saveFileDialog.FileName}.");
 
                 Properties.Settings.Default.SelectSaveJsonDirectory = System.IO.Path.GetDirectoryName(saveFileDialog.FileName);
@@ -85,7 +85,7 @@ namespace PSO2_Scratch_Parser
             }
         }*/
 
-        public void button_ParseURL(Object sender, EventArgs e)
+        private void button_ParseURL(Object sender, EventArgs e)
         {
             AskUrlDialogWindow askUrlDialogWindow = new AskUrlDialogWindow();
 
@@ -102,7 +102,7 @@ namespace PSO2_Scratch_Parser
             }
         }
 
-        public void button_DownloadImage(Object sender, EventArgs e)
+        private void button_DownloadImage(Object sender, EventArgs e)
         {
             using (var dialog = new FolderBrowserDialog())
             {
@@ -119,6 +119,87 @@ namespace PSO2_Scratch_Parser
             }
         }
 
+        private void button_DownloadAllImages(Object sender, EventArgs e)
+        {
+            using (var dialog = new FolderBrowserDialog())
+            {
+                dialog.SelectedPath = Properties.Settings.Default.SelectSaveImageDirectory;
+
+                DialogResult result = dialog.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    var downloadDirectory = dialog.SelectedPath;
+                    ScratchParser.SaveImages(downloadDirectory);
+
+                    Properties.Settings.Default.SelectSaveImageDirectory = dialog.SelectedPath;
+                }
+            }
+        }
+
+        private void button_DownloadItemImage(Object sender, EventArgs e)
+        {
+            using (var dialog = new FolderBrowserDialog())
+            {
+                dialog.SelectedPath = Properties.Settings.Default.SelectSaveImageDirectory;
+
+                DialogResult result = dialog.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    var downloadDirectory = dialog.SelectedPath;
+                    ScratchParser.SaveImages(downloadDirectory, true, false);
+
+                    Properties.Settings.Default.SelectSaveImageDirectory = dialog.SelectedPath;
+                }
+            }
+        }
+
+        public void button_DownloadBonusImage(Object sender, EventArgs e)
+        {
+            using (var dialog = new FolderBrowserDialog())
+            {
+                dialog.SelectedPath = Properties.Settings.Default.SelectSaveImageDirectory;
+
+                DialogResult result = dialog.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    var downloadDirectory = dialog.SelectedPath;
+                    ScratchParser.SaveImages(downloadDirectory, false, true);
+
+                    Properties.Settings.Default.SelectSaveImageDirectory = dialog.SelectedPath;
+                }
+            }
+        }
+
+        private void button_SaveItemNameText(Object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.InitialDirectory = Properties.Settings.Default.SelectSaveJsonDirectory;
+            saveFileDialog.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
+
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ScratchParser.WriteItemName(saveFileDialog.FileName);
+                Trace.WriteLine($"Saved item names to {saveFileDialog.FileName}.");
+
+                Properties.Settings.Default.SelectSaveJsonDirectory = System.IO.Path.GetDirectoryName(saveFileDialog.FileName);
+            }
+        }
+
+        private void button_SaveBonusNameText(Object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.InitialDirectory = Properties.Settings.Default.SelectSaveJsonDirectory;
+            saveFileDialog.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
+
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ScratchParser.WriteBonusName(saveFileDialog.FileName);
+                Trace.WriteLine($"Saved item names to {saveFileDialog.FileName}.");
+
+                Properties.Settings.Default.SelectSaveJsonDirectory = System.IO.Path.GetDirectoryName(saveFileDialog.FileName);
+            }
+        }
+
         public void button_ClearScratchList(Object sender, EventArgs e)
         {
             ScratchParser.Clear();
@@ -131,7 +212,11 @@ namespace PSO2_Scratch_Parser
             var isEnabled = ScratchParser != null && ScratchParser.HasData;
             sourceSaveItemListBtn.IsEnabled = isEnabled;
             sourceSaveBonusListBtn.IsEnabled = isEnabled;
-            downloadImageBtn.IsEnabled = isEnabled;
+            downloadAllImageBtn.IsEnabled = isEnabled;
+            downloadItemImageBtn.IsEnabled = isEnabled;
+            downloadBonusImageBtn.IsEnabled = isEnabled;
+            downloadItemNameBtn.IsEnabled = isEnabled;
+            downloadBonusNameBtn.IsEnabled = isEnabled;
             clearBtn.IsEnabled = isEnabled;
         }
 
