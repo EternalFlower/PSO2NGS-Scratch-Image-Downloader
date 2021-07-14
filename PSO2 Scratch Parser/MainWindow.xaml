@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PSO2_Scratch_Parser"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" FontSize="45"
+        Title="MainWindow" Height="650" Width="800" FontSize="45"
         Background="#FF54567E" FontFamily="Microsoft JhengHei" FontWeight="Normal">
 
     <Window.Resources>
@@ -30,6 +30,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
                 <RowDefinition Height="10"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
                 <RowDefinition Height="50"/>
                 <RowDefinition Height="50"/>
                 <RowDefinition Height="50"/>
@@ -69,7 +71,7 @@
                 Grid.Column="1"  
                 Content="Item List"
                 IsEnabled="false"
-                Click="button_ParseURL"/>
+                Click="saveItemList"/>
 
             <Button x:Name="sourceSaveBonusListBtn"
                 Grid.Row="4" 
@@ -87,7 +89,7 @@
                 Click="button_DownloadImage"/>
 
             <TextBox x:Name="TextBoxLog"
-                 Grid.Row="6" 
+                 Grid.Row="8" 
                  Grid.ColumnSpan="4" 
                  TextWrapping="Wrap" 
                  VerticalScrollBarVisibility="Auto" 
