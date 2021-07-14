@@ -92,14 +92,14 @@
             <Button x:Name="downloadItemImageBtn" 
                 Grid.Row="5" 
                 Grid.Column="2"  
-                Content="Item List"
+                Content="Item Image"
                 IsEnabled="false"
                 Click="button_DownloadAllImages"/>
 
             <Button x:Name="downloadBonusImageBtn" 
                 Grid.Row="5" 
                 Grid.Column="3"  
-                Content="Bonus List"
+                Content="Bonus Image"
                 IsEnabled="false"
                 Click="button_DownloadBonusImage"/>
 
