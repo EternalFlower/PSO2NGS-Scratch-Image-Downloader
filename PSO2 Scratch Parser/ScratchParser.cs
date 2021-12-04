@@ -33,8 +33,8 @@ namespace PSO2_Scratch_Parser
             Prize_Url = CleanScratchURL(url);
             try
             {
-                parseFromItemlistJSON();
-                parseFromBonuslistJSON();
+                ParseFromItemlistJSON();
+                ParseFromBonuslistJSON();
             }
             catch (Exception e)
             {
@@ -51,23 +51,18 @@ namespace PSO2_Scratch_Parser
             m_hasData = true;
         }
 
-        public void parseFromItemlistJSON()
+        public void ParseFromItemlistJSON()
         {
-            using (WebClient wc = new WebClient())
-            {
-                var json = wc.DownloadString(MergeURI(Prize_Url, itemlistJson_relURL));
-                m_ItemList.AddRange(JsonConvert.DeserializeObject<List<Prize>>(json));
-            }
-
+            using WebClient wc = new WebClient();
+            var json = wc.DownloadString(MergeURI(Prize_Url, itemlistJson_relURL));
+            m_ItemList.AddRange(JsonConvert.DeserializeObject<List<Prize>>(json));
         }
 
-        public void parseFromBonuslistJSON()
+        public void ParseFromBonuslistJSON()
         {
-            using (WebClient wc = new WebClient())
-            {
-                var json = wc.DownloadString(MergeURI(Prize_Url, bonuslistJson_relURL));
-                m_BonusList.AddRange(JsonConvert.DeserializeObject<List<BonusPrize>>(json));
-            }
+            using WebClient wc = new WebClient();
+            var json = wc.DownloadString(MergeURI(Prize_Url, bonuslistJson_relURL));
+            m_BonusList.AddRange(JsonConvert.DeserializeObject<List<BonusPrize>>(json));
         }
 
         public bool HasData
@@ -124,51 +119,44 @@ namespace PSO2_Scratch_Parser
 
         public async void WriteItemName(string fileName)
         {
-            using (StreamWriter file = new StreamWriter(fileName))
+            using StreamWriter file = new StreamWriter(fileName);
+            foreach (var item in m_ItemList)
             {
-                foreach (var item in m_ItemList)
-                {
-                    await file.WriteLineAsync(item.name);
-                }
+                await file.WriteLineAsync(item.name);
             }
         }
 
         public async void WriteBonusName(string fileName)
         {
-            using (StreamWriter file = new StreamWriter(fileName))
+            using StreamWriter file = new StreamWriter(fileName);
+            foreach (var item in m_BonusList)
             {
-                foreach (var item in m_BonusList)
-                {
-                    await file.WriteLineAsync(item.name);
-                }
+                await file.WriteLineAsync(item.name);
             }
         }
 
         private async Task DownloadImage(Uri url, string filename)
         {
-            using (WebClient client = new WebClient())
+            using WebClient client = new WebClient();
+            client.DownloadFileCompleted += ((sender, args) =>
             {
-                client.DownloadFileCompleted += ((sender, args) =>
+                if (args.Cancelled)
                 {
-                    if (args.Cancelled)
-                    {
-                        Trace.WriteLine("File download cancelled.");
-                    }
-
-                    Trace.WriteLine($"{filename} has been downloaded.");
-                });
-                try
-                {
-                    await client.DownloadFileTaskAsync(url, filename);
-                }
-                catch (Exception e)
-                {
-                    Exception inner = e.InnerException;
-                    
-                    Trace.WriteLine($"Failed to download File: {filename} from: {url.AbsoluteUri}");
-                    Trace.WriteLine($"Exception {inner.Message}.");
+                    Trace.WriteLine("File download cancelled.");
                 }
 
+                Trace.WriteLine($"{filename} has been downloaded.");
+            });
+            try
+            {
+                await client.DownloadFileTaskAsync(url, filename);
+            }
+            catch (Exception e)
+            {
+                Exception inner = e.InnerException;
+
+                Trace.WriteLine($"Failed to download File: {filename} from: {url.AbsoluteUri}");
+                Trace.WriteLine($"Exception {inner.Message}.");
             }
         }
 

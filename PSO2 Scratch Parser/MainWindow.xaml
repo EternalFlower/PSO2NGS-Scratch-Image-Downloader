@@ -3,29 +3,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PSO2_Scratch_Parser"
+        xmlns:local="clr-namespace:PSO2_Scratch_Parser" xmlns:shell="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
         mc:Ignorable="d"
         Title="MainWindow" Height="650" Width="800" FontSize="45"
-        Background="#FF54567E" FontFamily="Microsoft JhengHei" FontWeight="Normal">
-
+        Background="#FF1B5298" FontFamily="Microsoft JhengHei" FontWeight="Normal">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Margin" Value="20,5,20,5"/>
+            <Setter Property="Padding" Value="10"/>
             <Setter Property="FontSize" Value="20"/>
-            <Setter Property="Background" Value="#FFC8D1E8"/>
+            <Setter Property="Background" Value="#FF4DB8E9"/>
         </Style>
+        <DataTemplate x:Key="LanguagesDataTemplate">
+            <TextBlock Text="{Binding Path=NativeName}" />
+        </DataTemplate>
     </Window.Resources>
     <DockPanel>
-        <!--Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Exit" Click="menu_Exit"/>
-            </MenuItem>
-            <MenuItem Header="_Export">
-                <MenuItem x:Name="ExportJsonMenu" Header="_Export Json" Click="menu_ExportJson" IsEnabled="False"/>
-
-            </MenuItem>
-        </-->
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
@@ -46,78 +40,157 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="PSO2NGS Scratch Parser" TextAlignment="Center" Foreground="White" FontSize="35"/>
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="{Binding Path=AppName, Source={StaticResource Resource}}" TextAlignment="Center" Foreground="White" FontSize="35"/>
             <Separator Grid.Row="1" Grid.ColumnSpan="4"/>
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Scratch Data:" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            
-            <Button x:Name="scratchBtn"
+            <Button x:Name="ScratchButton"
                 Grid.Row="3" 
-                Grid.Column="1"  
-                Content="URL"
-                Click="button_ParseURL"/>
-            
-            <Button x:Name="clearBtn"
+                Grid.Column="1" 
+                Click="OnClick_FetchScratch">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <Viewbox>
+                            <TextBlock Text="{Binding Path=FetchScratch, Source={StaticResource Resource}}"/>
+                        </Viewbox>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+
+            <Button x:Name="ClearButton"
                 Grid.Row="3" 
                 Grid.Column="2"  
-                Content="Clear"
-                IsEnabled="false"
-                Click="button_ClearScratchList"/>
+                IsEnabled="{Binding DataAvailable}"
+                Click="OnClick_ClearScratch">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <Viewbox>
+                            <TextBlock Text="{Binding Path=ClearScratch, Source={StaticResource Resource}}"/>
+                        </Viewbox>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Scratch List JSON:" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-            <Button x:Name="sourceSaveItemListBtn"
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Path=DownloadJSONLabel, StringFormat='\{0}:', Source={StaticResource Resource}}" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <Button x:Name="SaveItemListJsonButton"
                 Grid.Row="4" 
                 Grid.Column="1"  
                 Content="Item List"
-                IsEnabled="false"
-                Click="saveItemList"/>
+                IsEnabled="{Binding DataAvailable}"
+                Click="SaveItemList">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <Viewbox>
+                            <TextBlock TextWrapping="Wrap" Text="{Binding Path=DownloadItemListJson, Source={StaticResource Resource}}"/>
+                        </Viewbox>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
 
-            <Button x:Name="sourceSaveBonusListBtn"
+            <Button x:Name="SaveBonusListJsonButton"
                 Grid.Row="4" 
                 Grid.Column="2"
                 Content="Bonus List"
-                IsEnabled="false"
-                Click="saveBonusList"/>
+                IsEnabled="{Binding DataAvailable}"
+                Click="SaveBonusList">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <Viewbox>
+                            <TextBlock Text="{Binding Path=DownloadBonusListJson, Source={StaticResource Resource}}"/>
+                        </Viewbox>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Image:" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Path=DownloadImageLabel, StringFormat='\{0}:', Source={StaticResource Resource}}" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-            <Button x:Name="downloadAllImageBtn" 
-                Grid.Row="5" 
-                Grid.Column="1"  
-                Content="All"
-                IsEnabled="false"
-                Click="button_DownloadAllImages"/>
+            <Button x:Name="DownloadItemImagesButton" 
+                Grid.Row="5"
+                Grid.Column="1"
+                Content="Item Image"
+                IsEnabled="{Binding DataAvailable}"
+                Click="OnClick_DownloadItemImages">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <Viewbox StretchDirection="DownOnly">
+                            <TextBlock Text="{Binding Path=DownloadItemImage, Source={StaticResource Resource}}"/>
+                        </Viewbox>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
 
-            <Button x:Name="downloadItemImageBtn" 
+            <Button x:Name="DownloadBonusItemImages" 
                 Grid.Row="5" 
                 Grid.Column="2"  
-                Content="Item Image"
-                IsEnabled="false"
-                Click="button_DownloadAllImages"/>
-
-            <Button x:Name="downloadBonusImageBtn" 
-                Grid.Row="5" 
-                Grid.Column="3"  
                 Content="Bonus Image"
-                IsEnabled="false"
-                Click="button_DownloadBonusImage"/>
+                IsEnabled="{Binding DataAvailable}"
+                Click="OnClick_DownloadBonusImages">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <Viewbox StretchDirection="DownOnly">
+                            <TextBlock Text="{Binding Path=DownloadBonusImage, Source={StaticResource Resource}}"/>
+                        </Viewbox>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+
+            <Button x:Name="DownloadAllImagesButton" 
+                Grid.Row="5" 
+                Grid.Column="3"
+                IsEnabled="{Binding DataAvailable}"
+                Click="OnClick_DownloadAllImages">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <Viewbox StretchDirection="DownOnly">
+                            <TextBlock Text="{Binding Path=DownloadAllImages, Source={StaticResource Resource}}"/>
+                        </Viewbox>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
 
             <TextBlock Grid.Row="6" Grid.Column="0" Text="Item Name:" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-            <Button x:Name="downloadItemNameBtn" 
+            <Button x:Name="DownloadItemListNamesButton" 
                 Grid.Row="6" 
                 Grid.Column="1"  
-                Content="Item Name"
-                IsEnabled="false"
-                Click="button_SaveItemNameText"/>
+                IsEnabled="{Binding DataAvailable}"
+                Click="OnClick_SaveItemNames">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <Viewbox StretchDirection="DownOnly">
+                            <TextBlock Text="{Binding Path=MainItemName, Source={StaticResource Resource}}"/>
+                        </Viewbox>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
 
-            <Button x:Name="downloadBonusNameBtn" 
+            <Button x:Name="DownloadBonusListNamesButton" 
                 Grid.Row="6" 
                 Grid.Column="2"  
-                Content="Bonus Name"
-                IsEnabled="false"
-                Click="button_SaveBonusNameText"/>
+                IsEnabled="{Binding DataAvailable}"
+                Click="OnClick_SaveBonusNames">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                    <Viewbox StretchDirection="DownOnly">
+                        <TextBlock Text="{Binding Path=BonusItemName, Source={StaticResource Resource}}"/>
+                    </Viewbox>
+                </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+
+            <ComboBox x:Name="LanguagesComboBox" 
+                      Grid.Row="7" 
+                      Grid.Column="4"  
+                      IsSynchronizedWithCurrentItem="True" 
+                      VerticalAlignment="Center" 
+                      Height="Auto"  
+                      ItemsSource="{Binding Path=SupportedCultures, Mode=OneWay, Source={StaticResource CultureResourcesDS}}" 
+                      ItemTemplate="{StaticResource LanguagesDataTemplate}" 
+                      FontSize="14" 
+                      HorizontalAlignment="Stretch" 
+                      Width="Auto" 
+                      Margin="0,0,20,0"/>
 
             <TextBox x:Name="TextBoxLog"
                  Grid.Row="8" 
@@ -125,15 +198,14 @@
                  TextWrapping="Wrap" 
                  VerticalScrollBarVisibility="Auto" 
                  AcceptsReturn="True" 
-                 TextChanged="TextBoxLog_OnTextChanged" 
+                 TextChanged="OnTextChanged_TextBoxLog" 
                  BorderBrush="#FFD7D7DC" 
                  BorderThickness="5" 
-                 Background="#FF474857" 
+                 Background="#FF090C40" 
                  Foreground="White" 
                  FontSize="16" 
                  FontFamily="Microsoft Sans Serif" 
                  IsReadOnly="True" />
         </Grid>
     </DockPanel>
-    
 </Window>
