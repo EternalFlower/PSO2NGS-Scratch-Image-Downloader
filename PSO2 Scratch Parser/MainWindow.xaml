@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:PSO2_Scratch_Parser" xmlns:shell="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
         mc:Ignorable="d"
         Title="MainWindow" Height="650" Width="800" FontSize="45"
+        Icon="./Images/Icons/SGAC.png"
         Background="#FF1B5298" FontFamily="Microsoft JhengHei" FontWeight="Normal">
     <Window.Resources>
         <Style TargetType="Button">

@@ -13,7 +13,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\Icons\SGAC.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\Icons\SGAC.png" />
   </ItemGroup>
 
   <ItemGroup>

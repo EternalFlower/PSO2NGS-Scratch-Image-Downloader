@@ -39,6 +39,14 @@ namespace PSO2_Scratch_Parser
         public string ss { get; set; }
 
         public string scratchname { get; set; }
+
+        public string name_en { get; set; }
+
+        public string type_name_en { get; set; }
+
+        public string explanation_en { get; set; }
+
+        public string supplement_en { get; set; }
     }
 
     public class BonusPrize
@@ -81,5 +89,13 @@ namespace PSO2_Scratch_Parser
         public string scratchname { get; set; }
 
         public string cycle { get; set; }
+
+        public string name_en { get; set; }
+
+        public string type_name_en { get; set; }
+
+        public string explanation_en { get; set; }
+
+        public string supplement_en { get; set; }
     }
 }

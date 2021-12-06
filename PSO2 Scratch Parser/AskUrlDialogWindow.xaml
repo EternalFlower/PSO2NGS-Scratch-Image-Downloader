@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PSO2_Scratch_Parser"
         mc:Ignorable="d"
         Title="Scratch URL" Height="160" Width="800"
-        Background="#FF54567E" FontFamily="Microsoft JhengHei" FontWeight="Normal">
+        Background="#FF1B5298" FontFamily="Microsoft JhengHei" FontWeight="Normal">
     <Grid Margin="15">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />

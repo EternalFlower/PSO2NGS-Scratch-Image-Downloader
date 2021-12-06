@@ -73,7 +73,7 @@ namespace PSO2_Scratch_Parser
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 ScratchParser.WriteItemListJSON(saveFileDialog.FileName);
-                Trace.WriteLine($"Saved parsed data to {saveFileDialog.FileName}.");
+                Trace.WriteLine($"Saved Item List JSON to {saveFileDialog.FileName}.");
 
                 Properties.Settings.Default.SelectSaveJsonDirectory = System.IO.Path.GetDirectoryName(saveFileDialog.FileName);
             }
@@ -90,7 +90,7 @@ namespace PSO2_Scratch_Parser
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 ScratchParser.WriteBonusListJSON(saveFileDialog.FileName);
-                Trace.WriteLine($"Saved parsed data to {saveFileDialog.FileName}.");
+                Trace.WriteLine($"Saved Bonus Item List to {saveFileDialog.FileName}.");
 
                 Properties.Settings.Default.SelectSaveJsonDirectory = System.IO.Path.GetDirectoryName(saveFileDialog.FileName);
             }

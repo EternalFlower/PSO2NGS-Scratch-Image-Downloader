@@ -121,7 +121,7 @@
     <value>PSO2NGS Scratch Parser</value>
   </data>
   <data name="BonusItemName" xml:space="preserve">
-    <value>Bonus Name</value>
+    <value>Bonus Item Names</value>
   </data>
   <data name="ClearScratch" xml:space="preserve">
     <value>Clear Scratch</value>
